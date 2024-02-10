@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: CandidateDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456789
+    ports:
+      - "5432:5432"
+
+  server:
+    image: server-image:latest
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=CandidateDB;User ID=postgres;Password=123456789"
