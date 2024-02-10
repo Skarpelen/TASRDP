@@ -1,0 +1,75 @@
+CREATE TABLE IF NOT EXISTS Surveys (
+    SurveyId SERIAL PRIMARY KEY,
+    Title VARCHAR(255) NOT NULL,
+    Description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS Interviews (
+    InterviewId SERIAL PRIMARY KEY,
+    Interviewee VARCHAR(255) NOT NULL,
+    SurveyId INTEGER REFERENCES Surveys(SurveyId)
+);
+
+CREATE TABLE IF NOT EXISTS Questions (
+    QuestionId SERIAL PRIMARY KEY,
+	SurveyId INTEGER REFERENCES Surveys(SurveyId),
+    Text VARCHAR(255) NOT NULL,
+    IsMultiple BOOLEAN NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Answers (
+    AnswerId SERIAL PRIMARY KEY,
+	QuestionId INTEGER REFERENCES Questions(QuestionId),
+    Text VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Results (
+    ResultId SERIAL PRIMARY KEY,
+    InterviewId INTEGER REFERENCES Interviews(InterviewId),
+    Date TIMESTAMP NOT NULL,
+    PickedAnswerIds INTEGER[] DEFAULT '{}'::INTEGER[] NOT NULL
+);
+
+
+
+
+INSERT INTO Surveys (Title, Description) VALUES 
+    ('Опрос о предпочтениях', 'Опрос о ваших предпочтениях в различных областях'),
+    ('Опрос о здоровье', 'Опрос о вашем образе жизни и здоровье');
+
+INSERT INTO Questions (SurveyId, Text, IsMultiple) VALUES 
+    (1, 'Какой ваш любимый цвет?', FALSE),
+    (1, 'Что вы предпочитаете: кофе или чай?', FALSE),
+    (1, 'Какую музыку вы предпочитаете?', FALSE),
+    (1, 'Как часто вы занимаетесь спортом?', FALSE),
+    (1, 'Вы предпочитаете чтение кино или книг?', FALSE);
+
+INSERT INTO Answers (QuestionId, Text) VALUES 
+    (1, 'Красный'),
+    (1, 'Синий'),
+    (1, 'Зеленый'),
+    (1, 'Желтый'),
+    (2, 'Кофе'),
+    (2, 'Чай'),
+    (2, 'Сок'),
+    (2, 'Вода'),
+    (3, 'Рок'),
+    (3, 'Поп'),
+    (3, 'Классика'),
+    (3, 'Джаз'),
+    (4, 'Ежедневно'),
+    (4, 'Раз в неделю'),
+    (4, 'Редко'),
+    (4, 'Никогда'),
+    (5, 'Кино'),
+    (5, 'Книги');
+
+INSERT INTO Interviews (Interviewee, SurveyId) VALUES 
+    ('Иванов Иван', 1),
+    ('Петров Петр', 1),
+    ('Сидоров Сидор', 1);
+
+INSERT INTO Results (InterviewId, Date, PickedAnswerIds) VALUES 
+    (1, CURRENT_TIMESTAMP, ARRAY[1, 5, 9, 13]),
+    (2, CURRENT_TIMESTAMP, ARRAY[2, 6, 10, 14]),
+    (3, CURRENT_TIMESTAMP, ARRAY[3, 7, 11, 15]);
